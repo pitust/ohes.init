@@ -1,0 +1,14 @@
+[package]
+name = "ohes_init"
+version = "0.1.0"
+authors = ["pitust <piotr@stelmaszek.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+liboh = { path = "liboh" }
+rlibc = "1.0.0"
+postcard = { version = "0.5.1", features = ["alloc"] }
+serde_derive = "1.0.117"
+serde = { version = "1.0.117", default-features = false, features = ["alloc"] }
