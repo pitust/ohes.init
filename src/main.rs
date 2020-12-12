@@ -64,7 +64,7 @@ struct Node {
 }
 #[macro_export]
 macro_rules! println {
-        ($($tail:tt)*) => { writeln!(liboh::klog::KLog, $($tail)*); }
+        ($($tail:tt)*) => { writeln!(liboh::klog::KLog, $($tail)*).unwrap(); }
     }
 fn write<T: serde::Serialize>(t: T) {
     let d = postcard::to_allocvec(&t).unwrap();
