@@ -83,7 +83,6 @@ fn ask_for_staf<'a, T: serde::Serialize, U: serde::Deserialize<'a> + Clone>(to: 
     x
 }
 
-
 fn read_buf<'a, U: serde::Deserialize<'a> + Clone>() -> U {
     let l = liboh::syscall::sys_getbufferlen();
     let a = unsafe { alloc::alloc::alloc(Layout::from_size_align(l as usize, 8).unwrap()) };
@@ -181,9 +180,14 @@ fn do_task(
 
 pub fn enforce<T>(s: serde_json::Result<T>) -> T {
     match s {
-        Ok(p) => { p }
+        Ok(p) => p,
         Err(f) => {
-            panic!("Failed reading init.rc:\n At {}:{} {}", f.line(), f.column(), f.to_string());
+            panic!(
+                "Failed reading init.rc:\n At {}:{} {}",
+                f.line(),
+                f.column(),
+                f.to_string()
+            );
         }
     }
 }
