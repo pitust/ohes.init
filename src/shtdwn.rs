@@ -43,7 +43,7 @@ pub enum IOOpData {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct IOOp {
     pub port: u16,
-    pub data: IOOpData
+    pub data: IOOpData,
 }
 
 #[macro_export]
@@ -54,6 +54,31 @@ macro_rules! println {
 pub fn main_fn() {
     // "\ue0b0"
     println!("ohes is shutting down...");
-    liboh::syscall::sys_send("ops/kshutdown");
+
+    println!(" ---- qemu method ----");
+    liboh::service::request(
+        "kio",
+        IOOp {
+            port: 0x604,
+            data: IOOpData::WriteWord(0x2000),
+        },
+    );
+    println!(" ---- bochs/old qemu method ----");
+    liboh::service::request(
+        "kio",
+        IOOp {
+            port: 0xB004,
+            data: IOOpData::WriteWord(0x2000),
+        },
+    );
+    println!(" ---- vbox method ----");
+    liboh::service::request(
+        "kio",
+        IOOp {
+            port: 0x4004,
+            data: IOOpData::WriteWord(0x3400),
+        },
+    );
+    println!(" AYYY, get a better vm will ya? i can't power off!")
 }
 main!(main_fn);
