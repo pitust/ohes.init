@@ -38,21 +38,6 @@ pub enum FSResult {
     Failure(String),
 }
 
-// {
-//  "_init": {
-//    "run": ["fail", "-error", "_init is a meta-task that is launched by the init program itself"],
-//  },
-//  "target:boot": {
-//   "trigger_after": "_init",
-//   "run": ["kinfo", "-info", "Booted Oh Es!"],
-//   "wants": ["fs", "net", "sircs"]
-//  },
-//  "fs.impl": {
-//   "provides": "fs",
-//   "run": ["fs", "-root", "kfs:/"]
-//  },
-// }
-
 #[derive(Serialize, Deserialize, Debug)]
 struct Node {
     run: Vec<String>,
@@ -62,38 +47,8 @@ struct Node {
     with_fs: Option<String>,
     provides: Option<String>,
 }
-#[macro_export]
-macro_rules! println {
-        ($($tail:tt)*) => { writeln!(liboh::klog::KLog, $($tail)*).unwrap(); }
-    }
-fn write<T: serde::Serialize>(t: T) {
-    let d = postcard::to_allocvec(&t).unwrap();
-    liboh::syscall::sys_bindbuffer(d.as_slice());
-}
-fn ask_for_staf<'a, T: serde::Serialize, U: serde::Deserialize<'a> + Clone>(to: &str, t: T) -> U {
-    let d = postcard::to_allocvec(&t).unwrap();
-    liboh::syscall::sys_bindbuffer(d.as_slice());
-    liboh::syscall::sys_send(to);
-    let l = liboh::syscall::sys_getbufferlen();
-    let a = unsafe { alloc::alloc::alloc(Layout::from_size_align(l as usize, 8).unwrap()) };
-    let slc = unsafe { core::slice::from_raw_parts_mut(a, l as usize) };
-    liboh::syscall::sys_readbuffer(slc);
-    let x: U = postcard::from_bytes::<'a, U>(slc).unwrap().clone();
-    unsafe { alloc::alloc::dealloc(a, Layout::from_size_align(l as usize, 8).unwrap()) }
-    x
-}
 
-fn read_buf<'a, U: serde::Deserialize<'a> + Clone>() -> U {
-    let l = liboh::syscall::sys_getbufferlen();
-    let a = unsafe { alloc::alloc::alloc(Layout::from_size_align(l as usize, 8).unwrap()) };
-    let slc = unsafe { core::slice::from_raw_parts_mut(a, l as usize) };
-    liboh::syscall::sys_readbuffer(slc);
-    let x: U = postcard::from_bytes::<'a, U>(slc).unwrap().clone();
-    unsafe { alloc::alloc::dealloc(a, Layout::from_size_align(l as usize, 8).unwrap()) }
-    x
-}
-
-pub fn read_file(s: String) -> String {
+fn read_file(s: String) -> String {
     let t: FSResult = ask_for_staf("kfs", (FSOp::Read, s));
     let p = match t {
         FSResult::Text(p) => p,
@@ -102,8 +57,13 @@ pub fn read_file(s: String) -> String {
     String::from_utf8(p).unwrap()
 }
 
-fn exec(p: Vec<String>) {
-    println!("{:?}", p);
+fn readbin(s: String) -> Vec<u8> {
+    let t: FSResult = ask_for_staf("kfs", (FSOp::Read, s));
+    let p = match t {
+        FSResult::Text(p) => p,
+        _ => unreachable!(),
+    };
+    p
 }
 
 fn we_did_task(

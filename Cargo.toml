@@ -17,3 +17,12 @@ serde_derive = "1.0.117"
 [[bin]]
 path = "src/init.rs"
 name = "init"
+
+[[bin]]
+path = "src/kinfo.rs"
+name = "kinfo"
+
+
+[[bin]]
+path = "src/shtdwn.rs"
+name = "shutdown"
