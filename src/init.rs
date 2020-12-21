@@ -5,6 +5,7 @@
 #![feature(alloc_prelude)]
 
 use core::{alloc::Layout, fmt::Write};
+#[macro_use]
 use liboh::prelude::*;
 
 pub use alloc::{
@@ -131,7 +132,8 @@ fn do_task(
         None => {}
     };
     if can_do_now {
-        exec(pr[&r].run.clone());
+
+        liboh::exec(pr[&r].run.clone());
         we_did_task(rq, done, pr, r);
     } else {
         rq.push_back(r);
@@ -167,11 +169,11 @@ pub fn main_fn() {
         while q.len() != 0 {
             do_task(q.pop_front().unwrap(), &mut q, &mut done, &p);
         }
-        liboh::syscall::sys_accept("initd");
-        let x: String = read_buf();
-        q.push_back(x);
-        write(());
-        liboh::syscall::sys_respond();
+        
+        liboh::service::accept("initd", |x| {
+            q.push_back(x);
+            ()
+        })
     }
 }
 main!(main_fn);
