@@ -50,7 +50,7 @@ struct Node {
 }
 
 fn read_file(s: String) -> String {
-    let t: FSResult = ask_for_staf("kfs", (FSOp::Read, s));
+    let t: FSResult = liboh::service::request("kfs", (FSOp::Read, s));
     let p = match t {
         FSResult::Text(p) => p,
         _ => unreachable!(),
@@ -59,7 +59,7 @@ fn read_file(s: String) -> String {
 }
 
 fn readbin(s: String) -> Vec<u8> {
-    let t: FSResult = ask_for_staf("kfs", (FSOp::Read, s));
+    let t: FSResult = liboh::service::request("kfs", (FSOp::Read, s));
     let p = match t {
         FSResult::Text(p) => p,
         _ => unreachable!(),
