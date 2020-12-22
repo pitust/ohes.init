@@ -56,7 +56,7 @@ pub fn main_fn() {
     println!("ohes is shutting down...");
 
     println!(" ---- qemu method ----");
-    liboh::service::request(
+    let _: KIOOpResult = liboh::service::request(
         "kio",
         IOOp {
             port: 0x604,
@@ -64,7 +64,7 @@ pub fn main_fn() {
         },
     );
     println!(" ---- bochs/old qemu method ----");
-    liboh::service::request(
+    let _: KIOOpResult = liboh::service::request(
         "kio",
         IOOp {
             port: 0xB004,
@@ -72,7 +72,7 @@ pub fn main_fn() {
         },
     );
     println!(" ---- vbox method ----");
-    liboh::service::request(
+    let _: KIOOpResult = liboh::service::request(
         "kio",
         IOOp {
             port: 0x4004,
